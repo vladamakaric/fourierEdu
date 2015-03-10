@@ -1,36 +1,41 @@
-/*dodatni stilovi */
+html,body{
+	background-color: #f8f8f8;
+}
+.jumbotron{
 
-/* make sidebar nav vertical */ 
+	margin: 0;
+	padding: 10px;
+
+}
+  .affix-content .page-header{
+    margin-top: 0;
+  }
+  .affix-content{
+    background-color:white; 
+	padding: 50px;
+  } 
+
 @media (min-width: 768px){
   .affix-content .container {
     width: 700px;
   }   
 
-  html,body{
-    background-color: #f8f8f8;
-    height: 100%;
-    overflow: hidden;
-  }
-    .affix-content .container .page-header{
-    margin-top: 100;
-  }
+
   .sidebar-nav{
-        position:fixed; 
-        width:100%;
+	  width: 100%;
   }
+
   .affix-sidebar{
     padding-right:0; 
     font-size:small;
     padding-left: 0;
   }  
-  .affix-row, .affix-container, .affix-content{
-    height: 100%;
+  
+  .affix-row, .affix-content{
     margin-left: 0;
     margin-right: 0;    
   } 
-  .affix-content{
-    background-color:white; 
-  } 
+
   .sidebar-nav .navbar .navbar-collapse {
     padding: 0;
     max-height: none;
@@ -40,19 +45,32 @@
     margin-bottom:0; 
     border:0;
   }
+
   .sidebar-nav .navbar ul {
     float: none;
     display: block;
   }
+
   .sidebar-nav .navbar li {
     float: none;
     display: block;
   }
+
   .sidebar-nav .navbar li a {
+    float: none;
     padding-top: 12px;
     padding-bottom: 12px;
   }  
-}
+  
+  .side-link{
+	font-size: 1.4em;
+  }
+
+  .nav-list{
+	font-size: 1.2em;
+  }
+
+/*}
 
 @media (min-width: 769px){
   .affix-content .container {
@@ -106,4 +124,7 @@
     background-color: #428bca;
     color: white;
   }
-}
+  .sidebar-nav .navbar li a > .caret {
+    margin-top: 8px;
+  }  
+}*/
