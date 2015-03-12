@@ -1,23 +1,38 @@
 $("#main-content").load("home.html");
 
+$("#home").click(function(){
+	activateSideBtn("home");
+	$("#main-content").load("home.html");
+});
+
 var list = $("#theoryToggle li");
 var listCount = list.length;
 var theoryPageCallbacks = [];
+var contentBtnList = $(".contentBtn");
+
+function activateSideBtn(btnID){
+	contentBtnList.removeClass('active');	
+	contentBtnList.filter('#' + btnID).addClass('active');
+}
+
+activateSideBtn("home");
 
 $.each(list, function (index, data) {
 
+	var liid = $(this).attr("id");
+
 	theoryPageCallbacks[index] = function(){
 
-		var liid = $(list[index]).attr("id");
+		activateSideBtn(liid);
 
 		 $("#main-content").load(liid + ".html", function() {
+
 			MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 			$(this).append("<hr>");
 
 			var pager = $("<ul></ul>"); 
 			pager.attr("class","pager");
-
 		
 			if(index!=listCount-1){
 				var btn = $('<li>', {class: 'next'});
@@ -39,5 +54,7 @@ $.each(list, function (index, data) {
 		 });
 	}
 
-    $(this).click(theoryPageCallbacks[index]);
+    $(this).click( function() {
+		theoryPageCallbacks[index]();
+	});
 });
