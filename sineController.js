@@ -9,9 +9,13 @@ var SINE_CONTROLLER = (function(){
 		var jqcanvas = $("<canvas>");
 		jqcanvas.css({"width": '100%', 'height':'300px'});
 
-		var canvas = jqcanvas.get(); 
+		var canvas = jqcanvas.get(0); 
 
 		function redraw(){
+		  var context = canvas.getContext("2d");
+		  context.fillStyle = "black";
+		  context.font = "bold 16px Arial";
+		  context.fillText("Zibri"+this.frequency, 100, 100);
 			// this.canvas...
 		}
 
