@@ -2,9 +2,14 @@
 .nav-list > .active > a:hover,
 .nav-list > .active > a:focus {
   color: #ffffff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
-  background-color: #428bca;
+  /* text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2); */
+  /* background-color: #428bca; */
+  background-color: #e7e7e7;
 }
+	.nav-list{
+		text-indent: 23px;
+		/* text-align: center; */
+	}
 html,body{
 	background-color: #f8f8f8;
 	min-width: 500px;
@@ -35,7 +40,6 @@ html,body{
 	.affix-content .container {
 		width: 700px;
 	}   
-
 
 	.sidebar-nav{
 		width: 100%;
@@ -78,6 +82,7 @@ html,body{
 	}
 
 	.nav-list{
-		font-size: 1.2em;
+		font-size: 1.1em;
+		/* text-align: center; */
 	}
 }
