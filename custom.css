@@ -24,7 +24,6 @@ canvas{
 	height: 300px;
 }
 .slider{
-	padding-top: 30px;
 }
 
 .jumbotron{
@@ -34,11 +33,6 @@ canvas{
 .sum{
 	/*  height: 300px; */
 	background-color: #AA1122;
-}
-
-.bezveze{
-	/*  height: 200px; */
-	/* background-color: #FF00FF; */
 }
 
 .affix-row, .affix-content{

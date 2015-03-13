@@ -7,21 +7,25 @@ var NAVIGATION = (function(){
 		// setHomePage();
 
 
-		function icall(value){
-		}
+		// function icall(value){
+		// }
+        //
+		// function f(x) {
+		// 	return Math.exp(5*x/100);
+		// }
+        //
+		// function finv(x){
+		// 	return 100*(Math.log(x)/5);
+		// }
+        //
+		// DATA_BINDING.sliderInput($("#ebox"),$("#slajd"),1,100,30,icall,f,finv);
+		var sc =new SINE_CONTROLLER.SineController();	
 
-		function f(x) {
-			return Math.exp(5*x/100);
-		}
-
-		function finv(x){
-			return 100*(Math.log(x)/5);
-		}
-
-		DATA_BINDING.sliderInput($("#ebox"),$("#slajd"),1,100,30,icall,f,finv);
-		
+		var rowDiv = $('<div>', {class: 'row'});
+		rowDiv.append(sc.createCanvasDiv());
+		rowDiv.append(sc.createControlsDiv());
+		UI.getContentDiv().append(rowDiv);
 		addEventHandlers();
-		
 		setTheoryNavigation();
 	}
 

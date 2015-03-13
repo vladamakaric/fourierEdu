@@ -13,8 +13,6 @@ var DATA_BINDING = (function(){
 		input.attr('min', f(min));
 		input.attr('max', f(max));
 
-
-		alert(max + ' '+ f(100));
 		input.val(f(initial));
 		slider.attr('min', min);
 		slider.attr('max', max);
