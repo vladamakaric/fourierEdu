@@ -4,11 +4,28 @@ var NAVIGATION = (function(){
 	var contentBtnList = $(".contentBtn");
 
 	interf.setup = function(){
-		setHomePage();
+		// setHomePage();
+
+
+		function icall(value){
+		}
+
+		function f(x) {
+			return Math.exp(5*x/100);
+		}
+
+		function finv(x){
+			return 100*(Math.log(x)/5);
+		}
+
+		DATA_BINDING.sliderInput($("#ebox"),$("#slajd"),1,100,30,icall,f,finv);
+		
 		addEventHandlers();
+		
 		setTheoryNavigation();
 	}
 
+	
 	function setTheoryNavigation(){
 
 		var list = $("#theoryToggle li");
