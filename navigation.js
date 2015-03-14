@@ -6,10 +6,17 @@ var NAVIGATION = (function(){
 	interf.setup = function(){
 		var sc =new SINE_CONTROLLER.SineController();	
 		var rowDiv = $('<div>', {class: 'row'});
-		UI.getContentDiv().append(rowDiv);
+		UI.getContentDiv().append(rowDiv).append('<hr>');
 
 		rowDiv.append(sc.createCanvasDiv());
 		rowDiv.append(sc.createControlsDiv());
+
+		var s2c =new SINE_CONTROLLER.SineController();	
+		var row2Div = $('<div>', {class: 'row'});
+		UI.getContentDiv().append(row2Div);
+
+		row2Div.append(s2c.createCanvasDiv());
+		row2Div.append(s2c.createControlsDiv());
 
 		addEventHandlers();
 		setTheoryNavigation();
