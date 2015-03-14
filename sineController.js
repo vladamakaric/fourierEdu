@@ -1,7 +1,7 @@
 var SINE_CONTROLLER = (function(){
 	var interf = {};
 
-	interf.SineController = function(){
+	interf.SineController = function(id){
 		var frequency;
 		var amplitude;
 		var phaseShift;
@@ -12,7 +12,6 @@ var SINE_CONTROLLER = (function(){
 		var canvas = jqcanvas.get(0); 
 
 		var context = canvas.getContext("2d");
-
 
 		$(window).resize(redraw);
 
@@ -38,6 +37,7 @@ var SINE_CONTROLLER = (function(){
 			form.append(createSliderInputDiv('Amplitude', 
 			function(x) { amplitude = x; redraw(); }, 0, amplitudeFInv(1), amplitudeF,amplitudeFInv));
 
+			form.append(createOptionsDiv());
 			div.append(form);
 			return div;
 		}
@@ -64,6 +64,40 @@ var SINE_CONTROLLER = (function(){
 
 			return div;
 		}
+
+		function createOptionsDiv(){
+			var div  = $("<div>",{class:'row'}  ); 
+			var removeBtnDiv = $('<div>', {class: 'col-xs-6'});
+			var enableCbDiv = $('<div>', {class: 'col-xs-6'});
+			var removeBtn = $('<button>', {class: 'btn btn-danger', type: 'button'}).text('Remove');
+			var enableCb = $('<input>', {type: 'checkbox', 
+										value: "", 
+										'data-toggle':'toggle',
+										'data-on':'enabled',
+										'data-off':'disabled'});
+
+			enableCb.prop('checked', true);
+			enableCbDiv.append( enableCb);
+			removeBtnDiv.append(removeBtn);
+
+			div.append(removeBtnDiv);
+			div.append(enableCbDiv);
+
+					// <div class ="row">
+					// 	<div class="col-xs-6">
+					// 		<button type="button" class="btn btn-danger">Remove</button>
+					// 	</div>
+					// 	<div class="col-xs-6">
+					// 		<div class="checkbox">
+					// 			<label><input type="checkbox" value="">Option 2</label>
+					// 		</div>
+					// 	</div>
+					// </div>
+			return div;
+		}
+
+
+
 
 		function phaseF(x){ return 2*Math.PI*x/100;}
 		function phaseFInv(x){ return x*100/(2*Math.PI);}
