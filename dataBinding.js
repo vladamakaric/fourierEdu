@@ -7,19 +7,21 @@ var DATA_BINDING = (function(){
 
 		function identity(x) {return x;}
 
+		function formatFloat(x) { return parseFloat(x).toFixed(2);}
+
 		f = f || identity;
 		finv = finv || identity;	
 		changeCallback(f(initial));
 		input.attr('min', f(min));
 		input.attr('max', f(max));
 
-		input.val(f(initial));
+		input.val(formatFloat(f(initial)));
 		slider.attr('min', min);
 		slider.attr('max', max);
 		slider.val(initial);
 
 		slider.on('input', function(){
-    		input.val(f(slider.val()));
+    		input.val(formatFloat( f(slider.val()) ));
 			changeCallback(f(slider.val()));
 		});
 
