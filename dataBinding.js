@@ -9,7 +9,7 @@ var DATA_BINDING = (function(){
 
 		f = f || identity;
 		finv = finv || identity;	
-
+		changeCallback(f(initial));
 		input.attr('min', f(min));
 		input.attr('max', f(max));
 

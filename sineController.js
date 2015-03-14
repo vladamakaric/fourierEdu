@@ -2,34 +2,68 @@ var SINE_CONTROLLER = (function(){
 	var interf = {};
 
 	interf.SineController = function(){
-		this.frequency = 1;
-		this.apmplitude = 1;
-		this.phaseShift = 0;
+		var frequency = 1;
+		var apmplitude = 1;
+		var phaseShift = 0;
 
+		var canvDiv;
 		var jqcanvas = $("<canvas>");
-		jqcanvas.css({"width": '100%', 'height':'300px'});
 
 		var canvas = jqcanvas.get(0); 
 
+		var context = canvas.getContext("2d");
+
 		function redraw(){
-		  var context = canvas.getContext("2d");
-		  context.fillStyle = "black";
-		  context.font = "bold 16px Arial";
-		  context.fillText("Zibri"+this.frequency, 100, 100);
-			// this.canvas...
+			canvas.height = 300;
+			canvas.width = canvDiv.width();
+			context.clearRect(0, 0, canvas.width, canvas.height);
+
+			var halfHeight = canvas.height/2;
+
+			context.lineWidth = 1;
+			context.beginPath();
+			context.moveTo(0, canvas.height/2);
+			context.lineTo(canvas.width, canvas.height/2);
+			context.stroke();
+
+			context.beginPath();
+			context.moveTo(canvas.width/2,0 );
+			context.lineTo(canvas.width/2, canvas.height);
+			context.stroke();
+
+			context.lineWidth = 3;
+			context.strokeStyle = 'green';
+			context.beginPath();
+			var n = canvas.width/2;
+		
+			function equation(x){
+				return Math.sin(x*frequency/100);
+			}
+
+			for(var x = 0; x < canvas.width; x += 2) {
+				if(x===0)
+					context.moveTo(x, halfHeight  + halfHeight*equation(x) );
+				else
+					context.lineTo(x, halfHeight  + halfHeight*equation(x));
+			}
+			context.stroke();
 		}
 
+		$(window).resize(redraw);
+
+		this.draw = redraw;
+
 		this.createCanvasDiv = function(){
-			var div  = $("<div>", {"class":"col-xs-12 col-lg-8"}); 
-			div.append(jqcanvas);
-			return div;
+			canvDiv  = $("<div>", {"class":"col-xs-12 col-lg-8"}); 
+			canvDiv.append(jqcanvas);
+			return canvDiv;
 		}
 
 		this.createControlsDiv = function(){
 			var div  = $("<div>",{class:'col-xs-12 col-lg-8 col-md-6 col-lg-4'}  ); 
 			var form = $('<form>',{class:'form', role: 'form'});
 			form.append(createSliderInputDiv('Frekvencija', 
-			function(x) { this.frequency = x; redraw(); }, 1, f,finv));
+			function(x) { frequency = x; redraw(); }, 1, f,finv));
 
 			div.append(form);
 			return div;
