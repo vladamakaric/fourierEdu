@@ -7,21 +7,16 @@ var SINE_CONTROLLER = (function(){
 		var phaseShift=0;
 		var enabled=true;
 
-		//////////////////////////
-
-		var canvDiv;
-		var jqcanvas = $("<canvas>");
-		var canvas = jqcanvas.get(0); 
-		var context = canvas.getContext("2d");
 		var jqEl = $('<div>', {class: 'row'});
 
-		jqEl.append(createCanvasDiv());
+		var responsiveCanvas = new ResponsiveCanvas("col-xs-12 col-lg-8");
+		jqEl.append(responsiveCanvas.$);
 		jqEl.append(createControlsDiv());
 
 		var that = this;
+
 		this.addedToDOM = function(){
-			$(window).resize(redraw);
-			redraw();
+			responsiveCanvas.addedToDOM();
 		}
 
 		this.getJQEl = function(){return jqEl;}
@@ -30,15 +25,15 @@ var SINE_CONTROLLER = (function(){
 		this.getAmplitude = function() {return amplitude;}
 		this.getPhaseShift = function() {return phaseShift;}
 
-		function createCanvasDiv(){
-			var outerDiv = $("<div>", {"class":"col-xs-12 col-lg-8"}); 
-			var panel = UI.createPanel(jqcanvas);
-			canvDiv = panel.children().first();
-			outerDiv.append(panel);
-			return outerDiv;
-		}
-
 		function createControlsDiv(){
+			function phaseF(x){ return 2*Math.PI*x/100;}
+			function phaseFInv(x){ return x*100/(2*Math.PI);}
+			function frequencyF(x) {	return Math.exp(5*x/100)*0.1;}
+			function frequencyFInv(x){	return 100*(Math.log(x*10)/5);}
+			function amplitudeF(x){return x/100;}
+			function amplitudeFInv(x){return x*100;}
+			function redraw(){ responsiveCanvas.redraw();}
+
 			var div  = $("<div>",{class:'col-xs-12 col-lg-8 col-md-6 col-lg-4'}  ); 
 			var form = $('<form>',{class:'form', role: 'form'});
 
@@ -57,6 +52,7 @@ var SINE_CONTROLLER = (function(){
 		}
 
 		function createSliderInputDiv(description, valueChangeCallback, min,initVal, f, finv ){
+
 			var div  = $("<div>",{class:'row'}  ); 
 
 			var inputDiv = $('<div>', {class: 'form-group col-xs-6'});
@@ -108,16 +104,12 @@ var SINE_CONTROLLER = (function(){
 			return div;
 	}
 
-	function phaseF(x){ return 2*Math.PI*x/100;}
-	function phaseFInv(x){ return x*100/(2*Math.PI);}
-	function frequencyF(x) {	return Math.exp(5*x/100)*0.1;}
-	function frequencyFInv(x){	return 100*(Math.log(x*10)/5);}
-	function amplitudeF(x){return x/100;}
-	function amplitudeFInv(x){return x*100;}
+	responsiveCanvas.redraw = function(){
+		var canvas = this.canvas;
+		var context = this.context;
 
-	function redraw(){
 		canvas.height = 200;
-		canvas.width = canvDiv.width();
+		responsiveCanvas.updateWidth();
 		var ch = canvas.height;
 		var cw = canvas.width;
 
