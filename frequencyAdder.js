@@ -14,7 +14,24 @@ var FREQUENCY_ADDER = (function(interf){
 			sc.addedToDOM();
 		});
 
+		var sineView = new interf.SineSumView();
 		$insPoint.append(createAddNewSCDiv());
+		$insPoint.append('<hr>');
+		// $insPoint.append($('<h2>').text("Sum:")); 
+		$insPoint.append(sineView.get$());
+// .css({'padding-top': '1cm'})
+		sineView.addedToDOM();
+	}
+	
+	interf.getSineWaves = function(){
+		
+		sineWaves = [];
+
+		sineControllers.forEach(function(sc) {
+			sineWaves.push(sc.getSineWave());
+		});
+
+		return sineWaves;
 	}
 
 	function createAddNewSCDiv(){
@@ -63,7 +80,7 @@ var FREQUENCY_ADDER = (function(interf){
 		addSCToDom(createNewSineController());
 	}
 	function createNewSineController(){
-		return new SINE_CONTROLLER.SineController(scChange);
+		return new interf.SineController(scChange);
 	}
 	//elem is only sent when the element is remove
 	function scChange(elemToBeDeleted){

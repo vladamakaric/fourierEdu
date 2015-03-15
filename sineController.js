@@ -1,5 +1,5 @@
-var SINE_CONTROLLER = (function(){
-	var interf = {};
+var FREQUENCY_ADDER = (function(interf){
+
 
 	interf.SineController = function(changeCallback){
 		var frequency = 1;
@@ -147,5 +147,8 @@ var SINE_CONTROLLER = (function(){
 	}
 }
 
+	// interf.SineController.prototype.getSineWave = function(){
+	// 	return new SineWave(this.getAmplitude(), this.getFrequency(), this.getPhaseShift());
+	// }
 return interf;
-})();
+})(FREQUENCY_ADDER || {});

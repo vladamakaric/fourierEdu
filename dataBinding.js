@@ -11,7 +11,6 @@ var DATA_BINDING = (function(){
 
 		f = f || identity;
 		finv = finv || identity;	
-		// changeCallback(initial);
 		input.attr('min', f(min));
 		input.attr('max', f(max));
 
@@ -31,7 +30,5 @@ var DATA_BINDING = (function(){
 			changeCallback(flval);
 		});
 	}
-
-
 	return interf;
 })();
