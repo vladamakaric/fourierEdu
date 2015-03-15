@@ -11,14 +11,14 @@ var DATA_BINDING = (function(){
 
 		f = f || identity;
 		finv = finv || identity;	
-		changeCallback(f(initial));
+		// changeCallback(initial);
 		input.attr('min', f(min));
 		input.attr('max', f(max));
 
-		input.val(formatFloat(f(initial)));
+		input.val(formatFloat(initial));
 		slider.attr('min', min);
 		slider.attr('max', max);
-		slider.val(initial);
+		slider.val(finv(initial));
 
 		slider.on('input', function(){
     		input.val(formatFloat( f(slider.val()) ));
