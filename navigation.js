@@ -1,31 +1,15 @@
 var NAVIGATION = (function(){
-	var interf = {};
 
+	var interf = {};
 	var contentBtnList = $(".contentBtn");
 
 	interf.setup = function(){
-		var sc =new SINE_CONTROLLER.SineController();	
-		var rowDiv = $('<div>', {class: 'row'});
-		UI.getContentDiv().append(rowDiv).append('<hr>');
-
-		rowDiv.append(sc.createCanvasDiv());
-		rowDiv.append(sc.createControlsDiv());
-
-		var s2c =new SINE_CONTROLLER.SineController();	
-		var row2Div = $('<div>', {class: 'row'});
-		UI.getContentDiv().append(row2Div);
-
-		row2Div.append(s2c.createCanvasDiv());
-		row2Div.append(s2c.createControlsDiv());
-
+		setHomePage();
 		addEventHandlers();
 		setTheoryNavigation();
-		
 	}
 
-	
 	function setTheoryNavigation(){
-
 		var list = $("#theoryToggle li");
 		var listCount = list.length;
 		var theoryPageCallbacks = [];
@@ -33,8 +17,6 @@ var NAVIGATION = (function(){
 		function addNextPrevToTheoryPage(index, page){
 			MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
-			//$(this) is the mainContent div, where the current page
-			//content is
 			$(page).append("<hr>");
 
 			var pager = $("<ul></ul>"); 
@@ -62,8 +44,8 @@ var NAVIGATION = (function(){
 			var liid = $(this).attr("id");
 
 			theoryPageCallbacks[index] = function(){
-
 				activateSideBtn(liid);
+				UI.getContentDiv().empty();
 				UI.getContentDiv().load(liid + ".html", 
 				function() {addNextPrevToTheoryPage(index,this);});
 			}
@@ -83,6 +65,7 @@ var NAVIGATION = (function(){
 
 	function setHomePage(){
 		activateSideBtn("home");
+		UI.getContentDiv().empty();
 		UI.getContentDiv().load("home.html");
 	}
 
@@ -91,10 +74,13 @@ var NAVIGATION = (function(){
 
 		$("#freqAdd").click(function(){
 			activateSideBtn("freqAdd");
+			UI.getContentDiv().empty();
 			FREQUENCY_ADDER.loadInto(UI.getContentDiv());
 		});
 
 		$("#curveFitt").click(function(){
+
+			UI.getContentDiv().empty();
 			activateSideBtn("curveFitt");
 			$("#main-content").html("CurveFitt");
 		});

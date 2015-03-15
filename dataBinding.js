@@ -26,8 +26,9 @@ var DATA_BINDING = (function(){
 		});
 
 		input.on('change', function(){
-			slider.val(finv(input.val()));
-			changeCallback(input.val());
+			var flval = parseFloat(input.val());
+			slider.val(finv(flval));
+			changeCallback(flval);
 		});
 	}
 
