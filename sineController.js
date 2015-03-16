@@ -91,8 +91,9 @@ var FREQUENCY_ADDER = (function(interf){
 				changeCallback();
 			});
 
-			removeBtnDiv.on('click', function(){changeCallback(that);});
+			// removeBtnDiv.on('click', function(){changeCallback(that);});
 
+			removeBtnDiv.on('click', function(){changeCallback(that);});
 			enableCbDiv.append( enableCb);
 			removeBtnDiv.append(removeBtn);
 

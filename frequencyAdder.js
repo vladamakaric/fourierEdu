@@ -10,17 +10,21 @@ var FREQUENCY_ADDER = (function(interf){
 		sumController = createSumController();
 		sineControllers =  createSineControllers();
 
-		sineControllers.forEach(function(sc) {
-			$insPoint.append(sc.getJQEl()).append('<hr>');
+		sineSumView = new interf.SineSumView();
+		$insPoint.append(sineSumView.get$());
+		sineSumView.refreshSineWaves(getSineWaves());
+
+		$insPoint.append(createAddNewSCDiv());
+		sineControllers.forEach(function(sc, i) {
+			$insPoint.append(sc.getJQEl());
+			if(i!=sineControllers.length-1)
+				$insPoint.append('<hr>');
+
+			
 			sc.addedToDOM();
 		});
-
-		sineSumView = new interf.SineSumView();
-		$insPoint.append(createAddNewSCDiv());
-		$insPoint.append('<hr>');
-		$insPoint.append(sineSumView.get$());
+		// $insPoint.append('<hr>');
 		sineSumView.addedToDOM();
-		sineSumView.refreshSineWaves(getSineWaves());
 	}
 	
 	function getSineWaves(){
@@ -43,6 +47,8 @@ var FREQUENCY_ADDER = (function(interf){
 		$btn.append($('<span>', {class: "glyphicon glyphicon-plus"})).append(" Add new sine wave");
 
 		$btn.on('click',addNewSC); 
+
+		$btn.css({'margin-bottom': '20px'});
 		
 		$innerDiv.append($btn);
 
@@ -62,23 +68,22 @@ var FREQUENCY_ADDER = (function(interf){
 	}
 
 	function addSCToDom(sc){
-		var lastSC = sineControllers[sineControllers.length-1];
+		var lastSC = sineControllers[0];
 
 		sineControllers.push(sc);
 
 		$sc = sc.getJQEl();
 
-		if(!lastSC)
-			$insPoint.prepend($sc);				
-		else 
-			$sc.insertAfter(lastSC.getJQEl().next()); //next() is the <hr>
 
-		$('<hr>').insertAfter( $sc );
+		$sc.insertAfter(sineSumView.get$().next());
+
+		$('<hr>').insertAfter($sc);
 		sc.addedToDOM();
 	}
 
 	function addNewSC(){
 		addSCToDom(createNewSineController());
+		sineSumView.refreshSineWaves(getSineWaves());
 	}
 	function createNewSineController(){
 		return new interf.SineController(scChange);

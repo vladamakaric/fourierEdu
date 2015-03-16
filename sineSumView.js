@@ -34,6 +34,8 @@ var FREQUENCY_ADDER = (function(interf){
 			context.lineWidth = linew;
 			context.strokeStyle = '#5CB85C';
 
+
+
 			function f(x){
 
 				function equation(x){
@@ -56,7 +58,11 @@ var FREQUENCY_ADDER = (function(interf){
 			}
 
 			CANVAS_DRAW.drawFunction(context, 0, cw, 3, f);
-
+			var scale = sineWaves.length ? sineWaves.length : 1;
+			context.font="20px Georgia";
+			
+			context.fillText(scale,cw/2 + 10,25);
+			context.fillText(-scale,cw/2 + 10,ch-15);
 		}
 	}
 
