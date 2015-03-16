@@ -2,6 +2,7 @@ var FREQUENCY_ADDER = (function(interf){
 	var sineControllers;
 	var sumController; 
 	var $insPoint;
+	var sineSumView;
 
 	interf.loadInto = function(jqPageEl){
 		$insPoint = jqPageEl;
@@ -14,20 +15,20 @@ var FREQUENCY_ADDER = (function(interf){
 			sc.addedToDOM();
 		});
 
-		var sineView = new interf.SineSumView();
+		sineSumView = new interf.SineSumView();
 		$insPoint.append(createAddNewSCDiv());
 		$insPoint.append('<hr>');
-		// $insPoint.append($('<h2>').text("Sum:")); 
-		$insPoint.append(sineView.get$());
-// .css({'padding-top': '1cm'})
-		sineView.addedToDOM();
+		$insPoint.append(sineSumView.get$());
+		sineSumView.addedToDOM();
+		sineSumView.refreshSineWaves(getSineWaves());
 	}
 	
-	interf.getSineWaves = function(){
-		
+	function getSineWaves(){
+
 		sineWaves = [];
 
 		sineControllers.forEach(function(sc) {
+			if(sc.isEnabled())
 			sineWaves.push(sc.getSineWave());
 		});
 
@@ -92,6 +93,7 @@ var FREQUENCY_ADDER = (function(interf){
 			sineControllers.remove(index);
 		}
 
+		sineSumView.refreshSineWaves(getSineWaves());
 	}
 
 	return interf;

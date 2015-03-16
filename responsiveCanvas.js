@@ -8,7 +8,7 @@ function ResponsiveCanvas(className, panelName){
 	this.$canvDiv = panel.children().first();
 
 	if(panelName)
-		panel.prepend($('<div>', {class: "panel-heading"}).text(panelName));
+		panel.append($('<div>', {class: "panel-footer"}).text(panelName));
 
 	this.$.append(panel);
 }

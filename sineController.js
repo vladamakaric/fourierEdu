@@ -1,6 +1,5 @@
 var FREQUENCY_ADDER = (function(interf){
 
-
 	interf.SineController = function(changeCallback){
 		var frequency = 1;
 		var amplitude=1;
@@ -38,13 +37,13 @@ var FREQUENCY_ADDER = (function(interf){
 			var form = $('<form>',{class:'form', role: 'form'});
 
 			form.append(createSliderInputDiv('Frequency', 
-						function(x) { frequency = x; redraw(); }, 1, frequency, frequencyF, frequencyFInv));
+						function(x) { frequency = x; redraw(); changeCallback(); }, 1, frequency, frequencyF, frequencyFInv));
 
 			form.append(createSliderInputDiv('Phase', 
-						function(x) { phaseShift = x; redraw(); }, 0, phaseShift, phaseF, phaseFInv));
+						function(x) { phaseShift = x; redraw();  changeCallback();}, 0, phaseShift, phaseF, phaseFInv));
 
 			form.append(createSliderInputDiv('Amplitude', 
-						function(x) { amplitude = x; redraw(); }, 0, amplitude, amplitudeF, amplitudeFInv));
+						function(x) { amplitude = x; redraw();  changeCallback();}, 0, amplitude, amplitudeF, amplitudeFInv));
 
 			form.append(createOptionsDiv());
 			div.append(form);
@@ -114,41 +113,29 @@ var FREQUENCY_ADDER = (function(interf){
 		var cw = canvas.width;
 
 		context.clearRect(0, 0, ch, cw);
-		context.lineWidth = 1;
 
-		context.beginPath();
-		context.moveTo(0, ch/2);
-		context.lineTo(cw, ch/2);
-		context.stroke();
-
-		context.beginPath();
-		context.moveTo(cw/2,0 );
-		context.lineTo(cw/2, ch);
-		context.stroke();
+		CANVAS_DRAW.drawCoordSys(context, cw, ch);
 
 		var linew = 3;
 		context.lineWidth = linew;
 		context.strokeStyle = '#5CB85C';
-		context.beginPath();
 
-		function equation(x){
-			return amplitude*Math.sin(x*frequency + phaseShift);
+		function f(x){
+
+			function equation(x){
+				return amplitude*Math.sin(x*frequency + phaseShift);
+			}
+			var maxSineH = ch/2-linew;
+			var arg = x*(2*Math.PI/cw);
+			return ch/2  + maxSineH*equation(arg);
 		}
 
-		var arg;
-		var drawf;
-		var maxSineH = ch/2-linew;
-		for(var x = 0; x < cw; x += 3) {
-			drawf = x === 0 ? context.moveTo : context.lineTo; 
-			arg = x*(2*Math.PI/cw);
-			drawf.call(context,x,ch/2  + maxSineH*equation(arg));  
-		}
-		context.stroke();
+		CANVAS_DRAW.drawFunction(context, 0, cw, 3, f);
 	}
 }
 
-	// interf.SineController.prototype.getSineWave = function(){
-	// 	return new SineWave(this.getAmplitude(), this.getFrequency(), this.getPhaseShift());
-	// }
+	interf.SineController.prototype.getSineWave = function(){
+		return new SineWave(this.getAmplitude(), this.getFrequency(), this.getPhaseShift());
+	}
 return interf;
 })(FREQUENCY_ADDER || {});
