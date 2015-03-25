@@ -1,1 +1,57 @@
-Teorijabr2!!
+<h1>Vector space</h1>
+Fourier series can be thought of as an infinite dimensional vector space,
+where the basis are sinusoid harmonics. An inner product in the vector space of
+functions is defined analoguosly to its finite dimensional counterpart.
+
+$$
+	\langle f,g \rangle=\int f(x)g(x)dx 
+$$
+
+The analogy is clear when the integral is aproximated as a finite sum of
+products of sampled values of the two functions.
+
+In the case of Fourier series, because we are only interested in functions with a period of $T$,
+the inner product is defined as
+
+$$
+	\langle f,g \rangle= \int_0^T f(x)g(x)dx 
+$$
+
+<h2>Orthogonality</h2>
+Because functions of interest are periodic with period $T$, so are the sines and cosines constituting the
+basis (otherwise their sum wouldn't be periodic with perioud $T$). 
+
+\[
+	\sin\left(n\frac{2\pi t}{T}\right), \ \cos\left(n\frac{2\pi t}{T}\right), \ n \in \{0,1,2,\ldots\}
+\]
+
+Sine and cosine harmonics form a basis because they are orthogonal. The notion of orthogonality is
+"adopted" by analogy from finite dimensional vector spaces, i.e. inner product of zero. 
+
+For simplicity let $T= 2\pi$.
+
+\begin{align}
+	\int_0^{2\pi} \sin(nx)\cos(mx)dx & = 0, \ m,n = \{0,1,2,\ldots\} \\
+	\int_0^{2\pi} \cos(nx)\cos(mx)dx & = 0, \ m,n = \{1,2,\ldots\}, \ m\neq n \\
+	\int_0^{2\pi} \sin(nx)\sin(mx)dx & = 0, \ m,n = \{1,2,\ldots\}, \ m\neq n
+\end{align}
+
+Another function that also constitutes the basis is the constant function $1$. And is also orthogonal to the
+other basis components:
+
+\begin{align}
+	\int_0^{2\pi} 1\sin(nx)dx & = 0, \ n = \{1,2,\ldots\} \\
+	\int_0^{2\pi} 1\cos(nx)dx & = 0, \ n = \{1,2,\ldots\}
+\end{align}
+
+<h2>Calculating coefficients</h2>
+The Fourier series is defined as in the introductory chapter, (For simplicity, let $T=2\pi$)
+
+\begin{equation} 
+	f(t) = A_0 + \sum_{n=1}^{\infty}S_n \sin(nt) + C_n \cos(nt)
+\end{equation}
+
+The coefficients $A_0, S_n$ and $C_n$ are projections of $f(t)$ onto the basis functions $1, \sin(nt)$ and $\cos(nt)$.
+
+
+

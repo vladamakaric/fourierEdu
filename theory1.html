@@ -1,4 +1,43 @@
-<div class="panel panel-default">
-  <div class="panel-body"> Basic panel example
-  </div>
-</div>
+<h1>Periodic functions</h1>
+
+A function \(f(x)\) is periodic if a constant \(T\) exists such that for all \(x\):
+
+The smallest such \(T\) is called the fundamental period \(T_1\).
+The fundamental  frequency \(f_1\) is defined as
+the reciprocal of \(T_1\)
+
+$$f_1 = \frac{1}{T_1}$$
+
+A harmonic of the function \(f(x)\) is every function \(g(x)\)
+with a fundamental frequency that is an
+integer multiple of \(T\), \( f(2x), f(3x), \ldots, f(nx) \). 
+Every harmonic is also periodic with the period \(T\). 
+
+$$f(nx) = f(n(x + T)) = f(nx + nT)$$
+
+Shifting a function does not effect its periodicity. 
+
+$$
+f(x + \phi) = f(x + \phi + T)
+$$
+
+<h1>Fourier series</h1>
+The idea of Fourier series is that every periodic function \( f \)
+with a base frequency of \(f_1\) can be decomposed into a sum
+of sinusoidals with integer multiples of that frequency
+and variable phase and magnitude.
+
+$$
+f(t) = A_0 + \sum_{n=1}^{\infty} A_n \sin(2\pi f_nt + \phi_n)  
+$$
+
+Where $ f_n = n f_1 $.
+
+An alternative form of the sum is of non shifted sines and cosines,
+because of the addition formula for sines. 
+
+\begin{align}
+&A_n\sin(2\pi f_nt + \phi_n) \\ & = A_n\cos(\phi_n) \sin(2\pi f_nt) + 
+							A_n\sin(\phi_n) \cos(2\pi f_nt) \\
+							& = S_n \sin(2\pi f_nt) + C_n \cos(2\pi f_nt)
+\end{align}

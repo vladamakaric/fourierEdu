@@ -1,4 +1,19 @@
+<h2>Complex form</h2>
+Using Eulers identity, Fourier series can be expressed with complex exponentials. 
 
-When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are
-$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+\begin{align*}
+sin( x + \phi) &= cos(\phi)sin(x) + sin(\phi)cos(x) \\ 
+&= asin(x) + bcos(x)  \\
+&= a\frac{e^{ix} + e^{-ix}}{2} + b\frac{e^{ix} - e^{-ix}}{2i} \\
+&= a\frac{e^{ix} + e^{-ix}}{2} - bi\frac{e^{ix} - e^{-ix}}{2} \\
+&= \frac{a - bi}{2}e^{ix} + \frac{a + bi}{2}e^{-ix} \\
+&= Ze^{ix} + \overline{Z}e^{-ix}
+\end{align*}
+
+Substituting into the Fourier series
+
+\begin{align*}
+f(x) &= A_0 + \sum_{n=1}^{\infty}Z_ne^{ i\frac{2\pi nx}{T_1}} + \sum_{n=1}^{\infty}\overline{Z_n}e^{ -i\frac{2\pi nx}{T_1}  } \\
+&=\sum_{n=-\infty}^{\infty}Z_ne^{ i\frac{2\pi nx}{T_1}  }
+\end{align*}
 
