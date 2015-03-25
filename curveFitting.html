@@ -1,0 +1,17 @@
+<h1>Curve fitting</h1>
+Any integrable function can be represented by an infinite Fourier series. 
+The tail off the sum can usually be cut off with reasonable loss off accuracy 
+because the magnitude of the higher frequency harmonics diminishes.
+Below the user can draw any function and approximate it by a finite Fourier series.
+The coefficients are calculated using a variant of the FFT (Fast Fourier Transform) algorithm.
+The FFT is an algorithm for calculating coefficients for the DFT (discrete Fourier transform)
+which is a transformation of a discrete data set into a sum of sinusoids.
+In this case the discrete data is the discretized (sampled) version of the function drawn by the user. 
+
+<hr>
+
+After you draw the function you can choose whether you want to approximate
+it to a given accuracy, given by a maximum mean squared error. Alternatively you
+can choose the number of shifted sinusoids harmonics in the sum.
+
+

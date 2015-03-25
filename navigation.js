@@ -25,14 +25,14 @@ var NAVIGATION = (function(){
 			if(index!=listCount-1){
 				var btn = $('<li>', {class: 'next'});
 				btn.click(theoryPageCallbacks[index+1]);
-				btn.append($('<a>', {href: '#', text: 'Next'}));
+				btn.append($('<a>', {href: 'javascript:void(0)', text: 'Next'}));
 				pager.append(btn);
 			}
 
 			if(index>0){
 				var btn = $('<li>', {class: 'previous'});
 				btn.click(theoryPageCallbacks[index-1]);
-				btn.append($('<a>', {href: '#', text: 'Previous'}));
+				btn.append($('<a>', {href: 'javascript:void(0)', text: 'Previous'}));
 				pager.append(btn);
 			}
 
@@ -66,7 +66,9 @@ var NAVIGATION = (function(){
 	function setHomePage(){
 		activateSideBtn("home");
 		UI.getContentDiv().empty();
-		UI.getContentDiv().load("home.html");
+		UI.getContentDiv().load("home.html", function(){
+			UI.appendFooter();
+		});
 	}
 
 	function addEventHandlers(){
@@ -79,10 +81,9 @@ var NAVIGATION = (function(){
 		});
 
 		$("#curveFitt").click(function(){
-
 			UI.getContentDiv().empty();
 			activateSideBtn("curveFitt");
-			$("#main-content").html("CurveFitt");
+			UI.getContentDiv().load("curveFitting.html");
 		});
 	}
 
