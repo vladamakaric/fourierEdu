@@ -1,4 +1,5 @@
 function ResponsiveCanvas(className, panelName){
+
 	var $canvas = $('<canvas>');
 	this.canvas = $canvas.get(0);
 	this.context = this.canvas.getContext("2d");

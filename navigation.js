@@ -83,7 +83,9 @@ var NAVIGATION = (function(){
 		$("#curveFitt").click(function(){
 			UI.getContentDiv().empty();
 			activateSideBtn("curveFitt");
-			UI.getContentDiv().load("curveFitting.html");
+			UI.getContentDiv().load("curveFitting.html", function(){
+				CURVE_FITTER.loadInto(UI.getContentDiv());
+			});
 		});
 	}
 

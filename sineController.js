@@ -5,6 +5,7 @@ var FREQUENCY_ADDER = (function(interf){
 		var amplitude=1;
 		var phaseShift=0;
 		var enabled=true;
+		var bscb;
 
 		var jqEl = $('<div>', {class: 'row'});
 
@@ -16,6 +17,7 @@ var FREQUENCY_ADDER = (function(interf){
 
 		this.addedToDOM = function(){
 			responsiveCanvas.addedToDOM();
+			bscb.bootstrapToggle();
 		}
 
 		this.getJQEl = function(){return jqEl;}
@@ -81,9 +83,9 @@ var FREQUENCY_ADDER = (function(interf){
 			var removeBtn = $('<button>', {class: 'btn btn-danger', type: 'button', href: 'javascript:void(0)'}).text('Remove');
 			var enableCb = $('<input>', {'type': 'checkbox', 
 				value: "", 
-				'data-toggle':'toggle'});
-			// 'data-on':'enabled',
-			// 'data-off':'disabled'});
+				'data-toggle':'toggle',//});
+			'data-on':'enabled',
+			'data-off':'disabled'});
 
 			enableCb.prop('checked', true);
 			enableCb.change(function(){
@@ -100,7 +102,8 @@ var FREQUENCY_ADDER = (function(interf){
 			div.append(removeBtnDiv);
 			div.append(enableCbDiv);
 
-			enableCb.bootstrapToggle();
+			bscb = enableCb;
+			// enableCb.bootstrapToggle();
 			return div;
 	}
 

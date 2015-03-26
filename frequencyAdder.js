@@ -15,6 +15,7 @@ var FREQUENCY_ADDER = (function(interf){
 		sineSumView.refreshSineWaves(getSineWaves());
 
 		$insPoint.append(createAddNewSCDiv());
+
 		sineControllers.forEach(function(sc, i) {
 			$insPoint.append(sc.getJQEl());
 			if(i!=sineControllers.length-1)
