@@ -12,17 +12,19 @@ var CURVE_FITTER = (function(interf){
 		var sinNum = true;
 		var mousePressed = false;
 		var funcArr = [];
-		var funcLen = 8;
+		var funcLen = 64;
 		var prevMousePos = {x:-1,y:-1};
 
 		var div$ = $('<div>', {class: 'row'});
 		var modeCb;
+
 		/////////////////////////////////////////
 
 		initFuncArr();
 		
 		var responsiveCanvas = new ResponsiveCanvas("col-xs-12 col-lg-8");
 		var canvas = responsiveCanvas.canvas;
+		var canvEvtMngr = CanvPtrEventMngr(canvas);
 		div$.append(responsiveCanvas.$);
 		div$.append(createControlsDiv());
 
@@ -33,35 +35,12 @@ var CURVE_FITTER = (function(interf){
 			modeCb.bootstrapToggle();
 			modeCb.bootstrapToggle('disable');
 
-			function getMousePos(e) {
-				if (e.touches !== undefined && e.touches.length == 1) {
-					return {x: e.touches[0].pageX, y: e.touches[0].pageY};
-				}
-				else {
-					return {x: e.pageX, y: e.pageY};
-				}
-			}
+			canvEvtMngr.attachEvents(); 
 
-			function findPos(obj) {
-				var curleft = 0, curtop = 0;
-				if (obj.offsetParent) {
-					do {
-						curleft += obj.offsetLeft;
-						curtop += obj.offsetTop;
-					} while (obj = obj.offsetParent);
-					return { x: curleft, y: curtop };
-				}
-				return undefined;
-			}
-
-			function mouseMove(event){
-				if(!mousePressed) return;
-
-				var mpos = getMousePos(event);
-				var canvPos = findPos(canvas);
-				var x = mpos.x-canvPos.x;
-				var y = mpos.y-canvPos.y;
-				var currNormPos = {x:x, y:canvas.height/2-y};
+			canvEvtMngr.ptrMove = function(pos){
+				if(!canvEvtMngr.ptrPressed) return;	
+			
+				var currNormPos = {x:pos.x, y:canvas.height/2-pos.y};
 
 				if(prevMousePos.x === -1)
 					modifyFArrLineSegment(currNormPos, currNormPos);	
@@ -73,38 +52,10 @@ var CURVE_FITTER = (function(interf){
 				responsiveCanvas.redraw();
 			}
 
-			function mouseDown(event){
-				mousePressed = true;
-				mouseMove(event);
-			}
-
-			function touchStart(event){
-				mouseDown(event);
-			}
-
-			function mouseUp(event){
+			canvEvtMngr.ptrUp = function(pos){
 				prevMousePos = {x:-1,y:-1};
-				mousePressed = false;
 			}
 
-			function mouseOut(event){
-				prevMousePos = {x:-1,y:-1};
-				mousePressed = false;
-			}
-
-			function mouseClickEH(event){
-				mouseMove(event);
-			}
-
-			canvas.addEventListener("touchmove", function(event) { event.preventDefault(); mouseMove(event);},false);
-			canvas.addEventListener("touchstart",touchStart,false);
-			canvas.addEventListener("touchend",mouseUp,false);
-			canvas.addEventListener("click", mouseClickEH, false);
-			canvas.addEventListener("mousemove", mouseMove, false);
-			canvas.addEventListener("mousedown", mouseDown, false);
-			canvas.addEventListener("mouseup", mouseUp, false);
-			canvas.addEventListener("mouseout", mouseOut, false);
-			
 			function modifyFArrLineSegment(a,b){
 				var step =canvas.width/(funcLen-1); 
 				var leftP = a.x < b.x ? a : b;
