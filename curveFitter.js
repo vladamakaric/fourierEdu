@@ -12,7 +12,7 @@ var CURVE_FITTER = (function(interf){
 		var sinNum = true;
 		var mousePressed = false;
 		var funcArr = [];
-		var funcLen = 100;
+		var funcLen = 8;
 		var prevMousePos = {x:-1,y:-1};
 
 		var div$ = $('<div>', {class: 'row'});
@@ -25,8 +25,6 @@ var CURVE_FITTER = (function(interf){
 		var canvas = responsiveCanvas.canvas;
 		div$.append(responsiveCanvas.$);
 		div$.append(createControlsDiv());
-
-		
 
 		var that = this;
 
@@ -57,24 +55,22 @@ var CURVE_FITTER = (function(interf){
 			}
 
 			function mouseMove(event){
+				if(!mousePressed) return;
+
 				var mpos = getMousePos(event);
-				var canvPos = findPos(responsiveCanvas.canvas);
+				var canvPos = findPos(canvas);
 				var x = mpos.x-canvPos.x;
 				var y = mpos.y-canvPos.y;
+				var currNormPos = {x:x, y:canvas.height/2-y};
 
-				if(mousePressed){
-					var hh = responsiveCanvas.canvas.height/2;
-
-					if(prevMousePos.x === -1)
-						addLineSegment({x:x,y:hh-y}, {x:x,y:hh-y});	
-					else {
-						addLineSegment({x:x,y:hh-y}, prevMousePos);	
-					}
-
-					prevMousePos = {x:x,y:hh-y};
-					responsiveCanvas.redraw();
+				if(prevMousePos.x === -1)
+					modifyFArrLineSegment(currNormPos, currNormPos);	
+				else {
+					modifyFArrLineSegment(currNormPos, prevMousePos);	
 				}
 
+				prevMousePos = currNormPos;
+				responsiveCanvas.redraw();
 			}
 
 			function mouseDown(event){
@@ -107,36 +103,30 @@ var CURVE_FITTER = (function(interf){
 			canvas.addEventListener("mousemove", mouseMove, false);
 			canvas.addEventListener("mousedown", mouseDown, false);
 			canvas.addEventListener("mouseup", mouseUp, false);
-			canvas.addEventListener ("mouseout", mouseOut, false);
-
+			canvas.addEventListener("mouseout", mouseOut, false);
 			
-			function addLineSegment(a,b){
-				var step =canvas.width/funcLen; 
+			function modifyFArrLineSegment(a,b){
+				var step =canvas.width/(funcLen-1); 
 				var leftP = a.x < b.x ? a : b;
 				var rightP = a.x < b.x ? b : a;
 
 				var dx = rightP.x - leftP.x;
 
+				var leftIndx = Math.floor((leftP.x + step/2)/step);
+
 				if(dx<step){
-					addNewPoint(leftP.x, leftP.y);
+					funcArr[leftIndx] = leftP.y;
 					return;
 				}
-
+				
 				var k = (rightP.y - leftP.y)/dx;
+				var pointNum = Math.floor(dx/step)+1;
 
-				var curdx = 0;
-
-				while(dx>=curdx){
-					addNewPoint(leftP.x + curdx, leftP.y + k*curdx); 
-					curdx+=step;
+				for(var i=0; i<pointNum; i++){
+					funcArr[leftIndx + i] = leftP.y + k*i*step;
 				}
 			}
 
-			function addNewPoint(x,y){
-				var step =canvas.width/funcLen; 
-				arrLoc = Math.floor(x/step);
-				funcArr[arrLoc] = y;
-			}
 		}
 
 		this.get$ = function(){return div$;}

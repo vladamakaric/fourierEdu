@@ -19,7 +19,7 @@ var CANVAS_DRAW = (function(){
 	interf.drawCenteredArray = function(c,w,h,arr){
 		c.beginPath();
 
-		var step = w/arr.length;
+		var step = w/(arr.length-1);
 		var x=0;
 		var drawf;
 		var val;
