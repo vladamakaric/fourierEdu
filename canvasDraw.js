@@ -16,6 +16,23 @@ var CANVAS_DRAW = (function(){
 		c.stroke();
 	}
 
+	interf.drawCenteredArray = function(c,w,h,arr){
+		c.beginPath();
+
+		var step = w/arr.length;
+		var x=0;
+		var drawf;
+		var val;
+
+		arr.forEach(function(el){
+			drawf = x === 0 ? c.moveTo : c.lineTo; 
+			drawf.call(c,x,-el + h/2);  
+			x+=step;
+		});
+
+		c.stroke();
+	}
+
 	interf.drawFunction = function(c,start, end, step, func){
 		c.beginPath();
 
