@@ -82,7 +82,36 @@ var CURVE_FITTER = (function(interf){
 
 		this.get$ = function(){return div$;}
 
+		function offCalc(){
+			calculated = false;
+		}
 
+		function onCalc(){
+			calculated = true;
+
+			var imag = Array.apply(null, new Array(funcLen)).map(Number.prototype.valueOf,0);
+			//copies the whole array
+			var real = funcArr.slice();	
+
+			transform(real, imag);
+
+			real.forEach(function(val){
+				console.log(val);
+			});
+
+			inverseTransform(real, imag);
+
+			real.forEach(function(val){
+				console.log(val/funcLen);
+			});
+		}
+
+		function onReset(){
+			initFuncArr();
+			
+			responsiveCanvas.redraw();
+		}
+		
 		function initFuncArr(){ 
 			for(var i=0; i<funcLen; i++){
 				funcArr[i] = 0;
@@ -136,6 +165,10 @@ var CURVE_FITTER = (function(interf){
 				   'data-off':'error'});
 
 			modeCb.prop('checked', true);
+
+			
+			resetBtn.click(onReset);
+			calcBtn.click(onCalc);
 
 
 			// enableCb.change(function(){
