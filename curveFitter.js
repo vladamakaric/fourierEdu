@@ -12,9 +12,9 @@ var CURVE_FITTER = (function(interf){
 		var sinNum = true;
 		var mousePressed = false;
 		var fftCoefs = {};
-		var funcLen = 64;
+		var funcLen = 128;
 		var funcArr = new Float64Array(new ArrayBuffer(funcLen*8));
-		var prevMousePos = {x:-1,y:-1};
+		var prevMousePos = {x:-1, y:-1};
 
 		var div$ = $('<div>', {class: 'row'});
 		var $inputForm;
@@ -92,32 +92,36 @@ var CURVE_FITTER = (function(interf){
 		function onCalc(){
 			calculated = true;
 
-			//copy funcArr
 			fftCoefs.real =new Float64Array(funcArr);
-			fftCoefs.imag =Array.apply(null, new Array(funcLen)).map(Number.prototype.valueOf,0);
 
-			transform(fftCoefs.real, fftCoefs.imag);
-			inverseTransform(fftCoefs.real, fftCoefs.imag);
+			//zeroed out array
+			fftCoefs.imag =new Float64Array(new ArrayBuffer(funcLen*8));
 
-			$.each(fftCoefs.real, function(i,val){
-				console.log(val/funcLen);
-			});
 
 			$inputForm.hide();
 
+			var $loadingDiv = $('<div>');
+
 			$.get("spinLoader.svg", null,
-					function(data)
-					{
-						var svgNode = $("svg", data);
-						var docNode = document.adoptNode(svgNode[0]);
-						// var pageNode = $("#page_div");
+				function(data) {
+					var svgNode = $("svg", data);
+					var docNode = document.adoptNode(svgNode[0]);
 
-						$controlsDiv.html(docNode);
-						// pageNode.html(docNode);
-					},
-					'xml');
+					$loadingDiv.html(docNode);
+					$loadingDiv.prepend($('<p>').text('Loading').css({'font-size': '200%','text-align': 'center','margin-top': '30px'}));
+					
+					$controlsDiv.append($loadingDiv);
+				},
+				'xml');
 
-			// $controlsDiv.append();
+			var fftWorker = new Worker("webWorkers/realFuncFFT.js");
+			fftWorker.postMessage(fftCoefs,
+				[fftCoefs.real.buffer, fftCoefs.imag.buffer]);
+
+			fftWorker.onmessage = function(){
+				$loadingDiv.remove();
+				$inputForm.show();
+			}
 		}
 
 		function onReset(){
