@@ -54,7 +54,7 @@ var CanvPtrEventMngr = function(canvas){
 		}
 
 		function touchMove(event){ 
-			event.defaultPrevented();
+			event.preventDefault();
 			ptrMove(event);
 		}
 
