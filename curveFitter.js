@@ -11,11 +11,13 @@ var CURVE_FITTER = (function(interf){
 		var calculated = false;
 		var sinNum = true;
 		var mousePressed = false;
-		var funcArr = [];
+		var fftCoefs = {};
 		var funcLen = 64;
+		var funcArr = new Float64Array(new ArrayBuffer(funcLen*8));
 		var prevMousePos = {x:-1,y:-1};
 
 		var div$ = $('<div>', {class: 'row'});
+		var $inputForm;
 		var modeCb;
 
 		/////////////////////////////////////////
@@ -26,7 +28,9 @@ var CURVE_FITTER = (function(interf){
 		var canvas = responsiveCanvas.canvas;
 		var canvEvtMngr = CanvPtrEventMngr(canvas);
 		div$.append(responsiveCanvas.$);
-		div$.append(createControlsDiv());
+
+		var $controlsDiv =createControlsDiv(); 
+		div$.append($controlsDiv);
 
 		var that = this;
 
@@ -77,7 +81,6 @@ var CURVE_FITTER = (function(interf){
 					funcArr[leftIndx + i] = leftP.y + k*i*step;
 				}
 			}
-
 		}
 
 		this.get$ = function(){return div$;}
@@ -89,26 +92,22 @@ var CURVE_FITTER = (function(interf){
 		function onCalc(){
 			calculated = true;
 
-			var imag = Array.apply(null, new Array(funcLen)).map(Number.prototype.valueOf,0);
-			//copies the whole array
-			var real = funcArr.slice();	
+			fftCoefs.real =new Float64Array(funcArr);
+			fftCoefs.imag =Array.apply(null, new Array(funcLen)).map(Number.prototype.valueOf,0);
 
-			transform(real, imag);
+			transform(fftCoefs.real, fftCoefs.imag);
+			inverseTransform(fftCoefs.real, fftCoefs.imag);
 
-			real.forEach(function(val){
-				console.log(val);
-			});
-
-			inverseTransform(real, imag);
-
-			real.forEach(function(val){
+			$.each(fftCoefs.real, function(i,val){
 				console.log(val/funcLen);
 			});
+
+			$inputForm.hide();
+			$controlsDiv.append("smor");
 		}
 
 		function onReset(){
 			initFuncArr();
-			
 			responsiveCanvas.redraw();
 		}
 		
@@ -120,15 +119,18 @@ var CURVE_FITTER = (function(interf){
 
 		function createControlsDiv(){
 			var div  = $("<div>",{class:'col-xs-12 col-lg-8 col-md-6 col-lg-4'}  ); 
-			var form = $('<form>',{class:'form', role: 'form'});
+			$inputForm = $('<form>',{class:'form', role: 'form'});
 
-			form.append(createOptionsDiv());
-			div.append(form);
+			$inputForm.append(createOptionsDiv());
+			$inputForm.append(createSliderInputDiv('Term number', function(){}, 50));
+			div.append($inputForm);
+			// $inputForm.hide();
 			return div;
 		}
 
-		function createSliderInputDiv(description, valueChangeCallback, min,initVal, f, finv ){
+		function createSliderInputDiv(description, valueChangeCallback, initVal){
 			var div = $("<div>",{class:'row'}  ); 
+			div.css({'margin-top': '20px'});
 
 			var inputDiv = $('<div>', {class: 'form-group col-xs-6'});
 			inputDiv.append($('<label>').text(description));
@@ -145,7 +147,7 @@ var CURVE_FITTER = (function(interf){
 			div.append(inputDiv);
 			div.append(sliderDiv);
 
-			DATA_BINDING.sliderInput(input,slider,min,100,initVal,valueChangeCallback,f,finv);
+			DATA_BINDING.sliderInput(input,slider,0,funcLen,initVal,valueChangeCallback);
 
 			return div;
 		}
@@ -165,15 +167,9 @@ var CURVE_FITTER = (function(interf){
 				   'data-off':'error'});
 
 			modeCb.prop('checked', true);
-
 			
 			resetBtn.click(onReset);
 			calcBtn.click(onCalc);
-
-
-			// enableCb.change(function(){
-			// 	changeCallback();
-			// });
 
 			calcBtnDiv.append(calcBtn);
 			resetBtnDiv.append(resetBtn);
@@ -183,8 +179,6 @@ var CURVE_FITTER = (function(interf){
 			div.append(resetBtnDiv);
 			div.append(modeCbDiv);
 
-
-			// enableCb.bootstrapToggle();
 			return div;
 		}
 

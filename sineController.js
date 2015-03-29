@@ -71,7 +71,7 @@ var FREQUENCY_ADDER = (function(interf){
 			div.append(inputDiv);
 			div.append(sliderDiv);
 
-			DATA_BINDING.sliderInput(input,slider,min,100,initVal,valueChangeCallback,f,finv);
+			DATA_BINDING.sliderInput(input,slider,min,100,initVal,valueChangeCallback,f,finv,2);
 
 			return div;
 		}

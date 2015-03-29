@@ -3,11 +3,12 @@ var DATA_BINDING = (function(){
 	var interf = {};
 
 	//input and slider are jq DOM objs.
-	interf.sliderInput = function(input, slider, min, max, initial,  changeCallback, f, finv){
+	interf.sliderInput = function(input, slider, min, max, initial,  changeCallback, f, finv, decimalPoints){
 
+		decimalPoints = decimalPoints || 0;
 		function identity(x) {return x;}
 
-		function formatFloat(x) { return parseFloat(x).toFixed(2);}
+		function formatFloat(x) { return parseFloat(x).toFixed(decimalPoints);}
 
 		f = f || identity;
 		finv = finv || identity;	

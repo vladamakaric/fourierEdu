@@ -24,11 +24,11 @@ var CANVAS_DRAW = (function(){
 		var drawf;
 		var val;
 
-		arr.forEach(function(el){
+		for(var i=0; i<arr.length; i++){
 			drawf = x === 0 ? c.moveTo : c.lineTo; 
-			drawf.call(c,x,-el + h/2);  
+			drawf.call(c,x,-arr[i] + h/2);  
 			x+=step;
-		});
+		}
 
 		c.stroke();
 	}
