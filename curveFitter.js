@@ -92,6 +92,7 @@ var CURVE_FITTER = (function(interf){
 		function onCalc(){
 			calculated = true;
 
+			//copy funcArr
 			fftCoefs.real =new Float64Array(funcArr);
 			fftCoefs.imag =Array.apply(null, new Array(funcLen)).map(Number.prototype.valueOf,0);
 
@@ -103,7 +104,20 @@ var CURVE_FITTER = (function(interf){
 			});
 
 			$inputForm.hide();
-			$controlsDiv.append("smor");
+
+			$.get("spinLoader.svg", null,
+					function(data)
+					{
+						var svgNode = $("svg", data);
+						var docNode = document.adoptNode(svgNode[0]);
+						// var pageNode = $("#page_div");
+
+						$controlsDiv.html(docNode);
+						// pageNode.html(docNode);
+					},
+					'xml');
+
+			// $controlsDiv.append();
 		}
 
 		function onReset(){

@@ -123,7 +123,6 @@ var FREQUENCY_ADDER = (function(interf){
 		var linew = 3;
 		context.lineWidth = linew;
 		context.strokeStyle = '#5CB85C';
-
 		function f(x){
 
 			function equation(x){
