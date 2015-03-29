@@ -21,8 +21,12 @@ var DATA_BINDING = (function(){
 		slider.val(finv(initial));
 
 		slider.on('input', function(){
-    		input.val(formatFloat( f(slider.val()) ));
-			changeCallback(f(slider.val()));
+			
+			
+			console.log('slval: '+slider.val());
+			var flval = f(parseFloat(slider.val())); 
+    		input.val(formatFloat(flval ));
+			changeCallback(flval);
 		});
 
 		input.on('change', function(){

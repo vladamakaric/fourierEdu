@@ -7,11 +7,11 @@ self.onmessage = function(objEvent)
 
 	transform(real, imag);
 
-	inverseTransform(real, imag);
+	// inverseTransform(real, imag);
 
-	for(var i=0; i<real.length; i++){
-		console.log(real[i]/real.length);
-	}
+	// for(var i=0; i<real.length; i++){
+	// 	console.log(real[i]/real.length);
+	// }
 
-	self.postMessage('finish');
+	self.postMessage({real: real, imag:imag}, [real.buffer, imag.buffer]);
 }

@@ -8,11 +8,13 @@ var CURVE_FITTER = (function(interf){
 
 	function CurveFitter(){
 		//state
-		var calculated = false;
-		var sinNum = true;
+		var state = {calculated: false, sinNum:true};
+		var sqErrorMax = 1000;
 		var mousePressed = false;
 		var fftCoefs = {};
+		var displayFuncArr;
 		var funcLen = 128;
+		var termNum = 15;
 		var funcArr = new Float64Array(new ArrayBuffer(funcLen*8));
 		var prevMousePos = {x:-1, y:-1};
 
@@ -22,6 +24,8 @@ var CURVE_FITTER = (function(interf){
 
 		/////////////////////////////////////////
 
+		var $loadingDiv = $('<div>');
+		loadLoadingAnimIntoNode($loadingDiv);
 		initFuncArr();
 		
 		var responsiveCanvas = new ResponsiveCanvas("col-xs-12 col-lg-8");
@@ -85,47 +89,57 @@ var CURVE_FITTER = (function(interf){
 
 		this.get$ = function(){return div$;}
 
-		function offCalc(){
-			calculated = false;
-		}
-
 		function onCalc(){
-			calculated = true;
 
+			for(var i=0; i<funcLen; i++){
+				console.log(funcArr[i]);
+			}
 			fftCoefs.real =new Float64Array(funcArr);
-
-			//zeroed out array
 			fftCoefs.imag =new Float64Array(new ArrayBuffer(funcLen*8));
 
-
 			$inputForm.hide();
+			$controlsDiv.append($loadingDiv);
 
-			var $loadingDiv = $('<div>');
+			var fftWorker = new Worker("webWorkers/realFuncFFT.js");
+			fftWorker.postMessage(fftCoefs,
+				[fftCoefs.real.buffer, fftCoefs.imag.buffer]);
+
+			fftWorker.onmessage = function(e){
+				var real = e.data.real;
+				var imag = e.data.imag;
+
+				fftCoefs = {};
+				fftCoefs.real = real;
+				fftCoefs.imag = imag;
+
+				$loadingDiv.remove();
+				$inputForm.show();
+
+				state.calculated = true;
+				termNumChange();
+			}
+		}
+
+
+		function loadLoadingAnimIntoNode($node){
 
 			$.get("spinLoader.svg", null,
 				function(data) {
 					var svgNode = $("svg", data);
 					var docNode = document.adoptNode(svgNode[0]);
 
-					$loadingDiv.html(docNode);
-					$loadingDiv.prepend($('<p>').text('Loading').css({'font-size': '200%','text-align': 'center','margin-top': '30px'}));
-					
-					$controlsDiv.append($loadingDiv);
+					$node.html(docNode);
+					$node.prepend($('<p>').text('Loading').css(
+							{'font-size': '200%',
+							'text-align': 'center',
+							'margin-top': '30px'}));
 				},
 				'xml');
-
-			var fftWorker = new Worker("webWorkers/realFuncFFT.js");
-			fftWorker.postMessage(fftCoefs,
-				[fftCoefs.real.buffer, fftCoefs.imag.buffer]);
-
-			fftWorker.onmessage = function(){
-				$loadingDiv.remove();
-				$inputForm.show();
-			}
 		}
 
 		function onReset(){
 			initFuncArr();
+			state.calculated = false;
 			responsiveCanvas.redraw();
 		}
 		
@@ -140,10 +154,54 @@ var CURVE_FITTER = (function(interf){
 			$inputForm = $('<form>',{class:'form', role: 'form'});
 
 			$inputForm.append(createOptionsDiv());
-			$inputForm.append(createSliderInputDiv('Term number', function(){}, 50));
+			$inputForm.append(createSliderInputDiv('Term number', termNumChange, termNum));
 			div.append($inputForm);
 			// $inputForm.hide();
 			return div;
+		}
+
+		function getFFTCoeffsCopy(){
+			var fftCoefsCpy = {};
+			fftCoefsCpy.real = new Float64Array(fftCoefs.real.buffer.slice()); 
+			fftCoefsCpy.imag = new Float64Array(fftCoefs.imag.buffer.slice()); 
+
+			return fftCoefsCpy;
+		}
+
+		function termNumChange(val){
+
+			var fftcoefs = getFFTCoeffsCopy();
+
+			console.log('copyed');
+
+			for(var i=0; i<funcLen; i++){
+				console.log(fftcoefs.real[i] + 'i: ' + fftcoefs.imag[i]);
+			}
+			
+			console.log('smor: '+val);
+
+			termNum =  val || termNum;
+
+			if(val === 0)
+				termNum=0;
+
+			var coef = termNum;
+			console.log('coef: ' + coef);
+			
+			if(termNum!==funcLen/2)
+			for(i=termNum; i<funcLen-termNum+1; i++){
+				fftcoefs.real[i] = fftcoefs.imag[i] = 0;
+				console.log(fftcoefs.real[i] + 'i: ' + fftcoefs.imag[i]);
+			}
+				
+			inverseTransform(fftcoefs.real, fftcoefs.imag);
+			displayFuncArr = fftcoefs.real;
+			
+			for(i=0; i<funcLen; i++){
+				displayFuncArr[i] /=funcLen;
+			}
+
+			responsiveCanvas.redraw();
 		}
 
 		function createSliderInputDiv(description, valueChangeCallback, initVal){
@@ -165,7 +223,7 @@ var CURVE_FITTER = (function(interf){
 			div.append(inputDiv);
 			div.append(sliderDiv);
 
-			DATA_BINDING.sliderInput(input,slider,0,funcLen,initVal,valueChangeCallback);
+			DATA_BINDING.sliderInput(input,slider,1,funcLen/2,initVal,valueChangeCallback);
 
 			return div;
 		}
@@ -212,6 +270,13 @@ var CURVE_FITTER = (function(interf){
 			context.clearRect(0, 0, ch, cw);
 
 			CANVAS_DRAW.drawCenteredArray(context, cw, ch, funcArr);
+
+			if(state.calculated){
+				var linew = 3;
+				context.lineWidth = linew;
+				context.strokeStyle = '#5CB85C';
+				CANVAS_DRAW.drawCenteredArray(context, cw, ch, displayFuncArr);
+			}
 		}
 	}
 	return interf;
