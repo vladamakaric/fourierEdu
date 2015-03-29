@@ -8,12 +8,13 @@ var CURVE_FITTER = (function(interf){
 
 	function CurveFitter(){
 		var state = {calculated: false, termNumInput:true};
-		var sqErrorMax = 0;
+		var sqErrorMax = 1000;
 		var mousePressed = false;
 		var fftCoefs = {};
 		var displayFuncArr;
 		var funcLen = 128;
-		var termNum = 15;
+
+		var termNum = 1;
 		var funcArr = new Float64Array(new ArrayBuffer(funcLen*8));
 		var prevMousePos = {x:-1, y:-1};
 
@@ -111,29 +112,29 @@ var CURVE_FITTER = (function(interf){
 
 		function calcIFFTByMaxSqError(){
 
-			// var fftWorker = new Worker("webWorkers/realFuncFFT.js");
-			// fftWorker.postMessage(fftCoefs,
-			// 	[fftCoefs.real.buffer, fftCoefs.imag.buffer]); 
-            //
-			// fftWorker.onmessage = function(e){
-			// 	var real = e.data.real;
-			// 	var imag = e.data.imag;
-            //
-			// 	fftCoefs = {};
-			// 	fftCoefs.real = real;
-			// 	fftCoefs.imag = imag;
-            //
-			// 	$loadingDiv.remove();
-			// 	$inputForm.show();
-            //
-			// 	if(!state.calculated){
-			// 		loadChosenCalcInputDiv();
-			// 	}
-            //
-			// 	state.calculated = true;
-			// 	modeCb.bootstrapToggle('enable');
-			// 	termNumChange();
-			// }
+			$inputForm.hide();
+			$controlsDiv.append($loadingDiv);
+			var fftWorker = new Worker("webWorkers/sqErrIFFT.js");
+		
+			var sqIFFTObj = {
+				funcArr: funcArr,
+				fftCoefs: fftCoefs,
+				sqErrorMax: sqErrorMax	
+			};
+
+
+			fftWorker.postMessage(sqIFFTObj); 
+
+
+			fftWorker.onmessage = function(e){
+				displayFuncArr = e.data.displayFuncArr;
+
+
+				responsiveCanvas.redraw();
+				$loadingDiv.remove();
+				$inputForm.show();
+				// termNumChange();
+			}
 		}
 
 		function onResetBtnClick(){
@@ -211,33 +212,23 @@ var CURVE_FITTER = (function(interf){
 			return div;
 		}
 
-		function getFFTCoeffsCopy(){
-			var fftCoefsCpy = {};
-			fftCoefsCpy.real = new Float64Array(fftCoefs.real.buffer.slice()); 
-			fftCoefsCpy.imag = new Float64Array(fftCoefs.imag.buffer.slice()); 
 
-			return fftCoefsCpy;
-		}
 
+		//slider change
 		function termNumChange(val){
-			var fftcoefs = getFFTCoeffsCopy();
-			termNum =  val || termNum;
-
-			if(val === 0)
-				termNum=0;
-			
+			var newFFTCoefs = FFTUtils.getFFTCoefsCopy(fftCoefs);
+			if(val !== undefined) termNum = val;
+		
+			//realne fje imaju simetricne koeficijente X(k) = X*(n-k)
 			if(termNum!==funcLen/2)
-			for(i=termNum; i<funcLen-termNum+1; i++)
-				fftcoefs.real[i] = fftcoefs.imag[i] = 0;
-				
-			inverseTransform(fftcoefs.real, fftcoefs.imag);
-			displayFuncArr = fftcoefs.real;
+				FFTUtils.lowPassFreqFilter(newFFTCoefs, termNum);
 			
-			for(i=0; i<funcLen; i++)
-				displayFuncArr[i] /=funcLen;
-
+				
+			FFTUtils.IFFT(newFFTCoefs);
+			displayFuncArr = newFFTCoefs.real;
 			responsiveCanvas.redraw();
 		}
+
 
 		function createSqErrorInputFieldAndTermOutputField(){
 			var div = $("<div>",{class:'row'}  ); 
@@ -258,16 +249,18 @@ var CURVE_FITTER = (function(interf){
 					input.val(0);
 					flval = 0;
 				}
-				sqErrMax = flval;
+
+				sqErrorMax = flval;
+				calcIFFTByMaxSqError();
 			});
 
 			var textDiv = $('<div>', {class: 'form-group col-xs-6'});
 
-			var sqErrLabel = $('<label>').text('Number of terms: 45');
-			textDiv.append(sqErrLabel);
+			// var sqErrLabel = $('<label>').text('Number of terms: 45');
+			// textDiv.append(sqErrLabel);
 
 			div.append(inputDiv);
-			div.append(sqErrLabel);
+			// div.append(sqErrLabel);
 
 			return div;
 		}
