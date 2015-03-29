@@ -7,9 +7,8 @@ var CURVE_FITTER = (function(interf){
 	}
 
 	function CurveFitter(){
-		//state
-		var state = {calculated: false, sinNum:true};
-		var sqErrorMax = 1000;
+		var state = {calculated: false, termNumInput:true};
+		var sqErrorMax = 0;
 		var mousePressed = false;
 		var fftCoefs = {};
 		var displayFuncArr;
@@ -20,6 +19,7 @@ var CURVE_FITTER = (function(interf){
 
 		var div$ = $('<div>', {class: 'row'});
 		var $inputForm;
+		var $calcInputDiv; 
 		var modeCb;
 
 		/////////////////////////////////////////
@@ -75,19 +75,48 @@ var CURVE_FITTER = (function(interf){
 
 				if(dx<step){
 					funcArr[leftIndx] = leftP.y;
-					return;
 				}
-				
-				var k = (rightP.y - leftP.y)/dx;
-				var pointNum = Math.floor(dx/step)+1;
+				else{
 
-				for(var i=0; i<pointNum; i++){
-					funcArr[leftIndx + i] = leftP.y + k*i*step;
+					var k = (rightP.y - leftP.y)/dx;
+					var pointNum = Math.floor(dx/step)+1;
+
+					for(var i=0; i<pointNum; i++){
+						funcArr[leftIndx + i] = leftP.y + k*i*step;
+					}
 				}
+
+				onChangeFuncData();
 			}
 		}
 
 		this.get$ = function(){return div$;}
+
+
+		function onChangeFuncData(){
+			if(state.calculated)
+				$calcInputDiv.remove();
+
+			state.calculated = false;
+			modeCb.bootstrapToggle('disable');
+			responsiveCanvas.redraw();
+		}
+
+		function onChangeCalcInputType(){
+		
+			state.termNumInput = $(this).prop('checked');
+
+			$calcInputDiv.remove();
+			loadChosenCalcInputDiv();
+
+
+			
+		}
+
+		function onReset(){
+			initFuncArr();
+			onChangeFuncData();
+		}
 
 		function onCalc(){
 
@@ -115,7 +144,12 @@ var CURVE_FITTER = (function(interf){
 				$loadingDiv.remove();
 				$inputForm.show();
 
+				if(!state.calculated){
+					loadChosenCalcInputDiv();
+				}
+
 				state.calculated = true;
+				modeCb.bootstrapToggle('enable');
 				termNumChange();
 			}
 		}
@@ -136,12 +170,6 @@ var CURVE_FITTER = (function(interf){
 				},
 				'xml');
 		}
-
-		function onReset(){
-			initFuncArr();
-			state.calculated = false;
-			responsiveCanvas.redraw();
-		}
 		
 		function initFuncArr(){ 
 			for(var i=0; i<funcLen; i++){
@@ -149,14 +177,29 @@ var CURVE_FITTER = (function(interf){
 			}
 		}
 
+		function loadChosenCalcInputDiv(){
+			if(state.termNumInput){
+				$calcInputDiv = createTermNumInputDiv();	
+			}else
+				$calcInputDiv = createSqErrorInputFieldAndTermOutputField();
+
+			$inputForm.append($calcInputDiv);
+		}
+
+		function createErrorInputDiv(){
+
+		}
+
+		function createTermNumInputDiv(){
+			return createSliderInputDiv('Term number', termNumChange, termNum);
+		}
+
 		function createControlsDiv(){
 			var div  = $("<div>",{class:'col-xs-12 col-lg-8 col-md-6 col-lg-4'}  ); 
 			$inputForm = $('<form>',{class:'form', role: 'form'});
 
 			$inputForm.append(createOptionsDiv());
-			$inputForm.append(createSliderInputDiv('Term number', termNumChange, termNum));
 			div.append($inputForm);
-			// $inputForm.hide();
 			return div;
 		}
 
@@ -204,6 +247,42 @@ var CURVE_FITTER = (function(interf){
 			responsiveCanvas.redraw();
 		}
 
+		function createSqErrorInputFieldAndTermOutputField(){
+			var div = $("<div>",{class:'row'}  ); 
+			div.css({'margin-top': '20px'});
+
+			var inputDiv = $('<div>', {class: 'form-group col-xs-6'});
+			inputDiv.append($('<label>').text('Maximum square error:'));
+
+			var input = $('<input>', {type: "text", class: 'form-control'});
+			inputDiv.append(input);
+
+			input.val(sqErrorMax.toFixed(2));
+
+			input.attr('min', 0);
+			input.on('change', function(){
+				
+				alert('smor');
+				var flval = parseFloat(input.val());
+				if(flval<0){
+					input.val(0);
+					flval = 0;
+				}
+				sqErrMax = flval;
+			});
+
+			var textDiv = $('<div>', {class: 'form-group col-xs-6'});
+
+			var sqErrLabel = $('<label>').text('Number of terms: 45');
+			// sqErrLabel.css({'margin-top': '35px'});
+			textDiv.append(sqErrLabel);
+
+			div.append(inputDiv);
+			div.append(sqErrLabel);
+
+			return div;
+		}
+
 		function createSliderInputDiv(description, valueChangeCallback, initVal){
 			var div = $("<div>",{class:'row'}  ); 
 			div.css({'margin-top': '20px'});
@@ -243,6 +322,8 @@ var CURVE_FITTER = (function(interf){
 				   'data-off':'error'});
 
 			modeCb.prop('checked', true);
+			
+			modeCb.change(onChangeCalcInputType);
 			
 			resetBtn.click(onReset);
 			calcBtn.click(onCalc);
