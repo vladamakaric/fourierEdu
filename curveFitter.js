@@ -102,7 +102,58 @@ var CURVE_FITTER = (function(interf){
 			responsiveCanvas.redraw();
 		}
 
-		function onChangeCalcInputType(){
+
+		function calcFFT(){
+			fftCoefs.real =new Float64Array(funcArr);
+			fftCoefs.imag =new Float64Array(new ArrayBuffer(funcLen*8));
+			transform(fftCoefs.real, fftCoefs.imag);
+		}
+
+		function calcIFFTByMaxSqError(){
+
+			// var fftWorker = new Worker("webWorkers/realFuncFFT.js");
+			// fftWorker.postMessage(fftCoefs,
+			// 	[fftCoefs.real.buffer, fftCoefs.imag.buffer]); 
+            //
+			// fftWorker.onmessage = function(e){
+			// 	var real = e.data.real;
+			// 	var imag = e.data.imag;
+            //
+			// 	fftCoefs = {};
+			// 	fftCoefs.real = real;
+			// 	fftCoefs.imag = imag;
+            //
+			// 	$loadingDiv.remove();
+			// 	$inputForm.show();
+            //
+			// 	if(!state.calculated){
+			// 		loadChosenCalcInputDiv();
+			// 	}
+            //
+			// 	state.calculated = true;
+			// 	modeCb.bootstrapToggle('enable');
+			// 	termNumChange();
+			// }
+		}
+
+		function onResetBtnClick(){
+			initFuncArr();
+			onChangeFuncData();
+		}
+
+		function onCalcBtnClick(){
+			calcFFT();
+
+			if(!state.calculated){
+				loadChosenCalcInputDiv();
+			}
+
+			state.calculated = true;
+			modeCb.bootstrapToggle('enable');
+			termNumChange();
+		}
+
+		function onChangeCalcModeClick(){
 		
 			state.termNumInput = $(this).prop('checked');
 
@@ -110,50 +161,11 @@ var CURVE_FITTER = (function(interf){
 			loadChosenCalcInputDiv();
 
 
-			
-		}
-
-		function onReset(){
-			initFuncArr();
-			onChangeFuncData();
-		}
-
-		function onCalc(){
-
-			for(var i=0; i<funcLen; i++){
-				console.log(funcArr[i]);
-			}
-			fftCoefs.real =new Float64Array(funcArr);
-			fftCoefs.imag =new Float64Array(new ArrayBuffer(funcLen*8));
-
-			$inputForm.hide();
-			$controlsDiv.append($loadingDiv);
-
-			var fftWorker = new Worker("webWorkers/realFuncFFT.js");
-			fftWorker.postMessage(fftCoefs,
-				[fftCoefs.real.buffer, fftCoefs.imag.buffer]);
-
-			fftWorker.onmessage = function(e){
-				var real = e.data.real;
-				var imag = e.data.imag;
-
-				fftCoefs = {};
-				fftCoefs.real = real;
-				fftCoefs.imag = imag;
-
-				$loadingDiv.remove();
-				$inputForm.show();
-
-				if(!state.calculated){
-					loadChosenCalcInputDiv();
-				}
-
-				state.calculated = true;
-				modeCb.bootstrapToggle('enable');
+			if(state.termNumInput){
 				termNumChange();
 			}
+			else calcIFFTByMaxSqError();
 		}
-
 
 		function loadLoadingAnimIntoNode($node){
 
@@ -186,10 +198,6 @@ var CURVE_FITTER = (function(interf){
 			$inputForm.append($calcInputDiv);
 		}
 
-		function createErrorInputDiv(){
-
-		}
-
 		function createTermNumInputDiv(){
 			return createSliderInputDiv('Term number', termNumChange, termNum);
 		}
@@ -212,37 +220,21 @@ var CURVE_FITTER = (function(interf){
 		}
 
 		function termNumChange(val){
-
 			var fftcoefs = getFFTCoeffsCopy();
-
-			console.log('copyed');
-
-			for(var i=0; i<funcLen; i++){
-				console.log(fftcoefs.real[i] + 'i: ' + fftcoefs.imag[i]);
-			}
-			
-			console.log('smor: '+val);
-
 			termNum =  val || termNum;
 
 			if(val === 0)
 				termNum=0;
-
-			var coef = termNum;
-			console.log('coef: ' + coef);
 			
 			if(termNum!==funcLen/2)
-			for(i=termNum; i<funcLen-termNum+1; i++){
+			for(i=termNum; i<funcLen-termNum+1; i++)
 				fftcoefs.real[i] = fftcoefs.imag[i] = 0;
-				console.log(fftcoefs.real[i] + 'i: ' + fftcoefs.imag[i]);
-			}
 				
 			inverseTransform(fftcoefs.real, fftcoefs.imag);
 			displayFuncArr = fftcoefs.real;
 			
-			for(i=0; i<funcLen; i++){
+			for(i=0; i<funcLen; i++)
 				displayFuncArr[i] /=funcLen;
-			}
 
 			responsiveCanvas.redraw();
 		}
@@ -261,8 +253,6 @@ var CURVE_FITTER = (function(interf){
 
 			input.attr('min', 0);
 			input.on('change', function(){
-				
-				alert('smor');
 				var flval = parseFloat(input.val());
 				if(flval<0){
 					input.val(0);
@@ -274,7 +264,6 @@ var CURVE_FITTER = (function(interf){
 			var textDiv = $('<div>', {class: 'form-group col-xs-6'});
 
 			var sqErrLabel = $('<label>').text('Number of terms: 45');
-			// sqErrLabel.css({'margin-top': '35px'});
 			textDiv.append(sqErrLabel);
 
 			div.append(inputDiv);
@@ -302,7 +291,7 @@ var CURVE_FITTER = (function(interf){
 			div.append(inputDiv);
 			div.append(sliderDiv);
 
-			DATA_BINDING.sliderInput(input,slider,1,funcLen/2,initVal,valueChangeCallback);
+			DATA_BINDING.sliderInput(input,slider,1,funcLen/2,initVal,valueChangeCallback,undefined,undefined,0,true);
 
 			return div;
 		}
@@ -317,16 +306,18 @@ var CURVE_FITTER = (function(interf){
 
 			modeCb = $('<input>', {'type': 'checkbox', 
 				value: "", 
+				   'data-onstyle':'default',
+				   'data-offstyle':'default',
 				   'data-toggle':'toggle',
 				   'data-on':'terms',
 				   'data-off':'error'});
 
 			modeCb.prop('checked', true);
 			
-			modeCb.change(onChangeCalcInputType);
+			modeCb.change(onChangeCalcModeClick);
 			
-			resetBtn.click(onReset);
-			calcBtn.click(onCalc);
+			resetBtn.click(onResetBtnClick);
+			calcBtn.click(onCalcBtnClick);
 
 			calcBtnDiv.append(calcBtn);
 			resetBtnDiv.append(resetBtn);
@@ -360,5 +351,6 @@ var CURVE_FITTER = (function(interf){
 			}
 		}
 	}
+
 	return interf;
 })(CURVE_FITTER || {});
